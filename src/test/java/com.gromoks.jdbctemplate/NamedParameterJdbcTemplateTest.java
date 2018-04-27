@@ -62,7 +62,7 @@ public class NamedParameterJdbcTemplateTest {
     }
 
     @Test
-    public void queryTest() {
+    public void queryTest() throws SQLException {
         ProductRowMapper productRowMapper = new ProductRowMapper();
         Map<String, Object> parameterMap = new HashMap<>();
         parameterMap.put("name", "iPhone");
@@ -79,7 +79,7 @@ public class NamedParameterJdbcTemplateTest {
     }
 
     @Test
-    public void queryForObjectTest() {
+    public void queryForObjectTest() throws SQLException {
         ProductRowMapper productRowMapper = new ProductRowMapper();
         Map<String, Object> parameterMap = new HashMap<>();
         parameterMap.put("name", "iPhone");
@@ -93,6 +93,18 @@ public class NamedParameterJdbcTemplateTest {
         assertEquals(product.getPrice(), actualProduct.getPrice(), 0);
     }
 
+    @Test
+    public void updateTest() throws SQLException {
+        Map<String, Object> parameterMap = new HashMap<>();
+        parameterMap.put("name", "iPhone");
+        String sql = "INSERT INTO PRODUCT(name) VALUES(:name)";
+
+        when(namedParameterJdbcTemplate.update(sql, parameterMap)).thenReturn(product.getId());
+
+        int generatedKey = namedParameterJdbcTemplate.update(sql, parameterMap);
+        assertEquals(product.getId(), generatedKey);
+    }
+
     class Product {
         private int id;
         private String name;
@@ -101,11 +113,6 @@ public class NamedParameterJdbcTemplateTest {
         private String description;
 
         public Product() {
-        }
-
-        public Product(String name, double price) {
-            this.name = name;
-            this.price = price;
         }
 
         public int getId() {

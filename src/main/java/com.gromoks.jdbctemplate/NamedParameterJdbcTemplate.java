@@ -22,7 +22,7 @@ public class NamedParameterJdbcTemplate {
         this.dataSource = dataSource;
     }
 
-    public <T> List<T> query(String sql, Map<String, ?> paramMap, RowMapper<T> rowMapper) {
+    public <T> List<T> query(String sql, Map<String, ?> paramMap, RowMapper<T> rowMapper) throws SQLException {
         List<T> resultList = new ArrayList<>();
         ParsedSql parsedSql = new ParsedSql(sql);
         String substituteNamedParametersSql = parsedSql.getSubstituteNamedParameterSql();
@@ -36,13 +36,11 @@ public class NamedParameterJdbcTemplate {
                     resultList.add(record);
                 }
             }
-        } catch (SQLException e) {
-            throw new RuntimeException("Issue with query execution: ", e);
         }
         return resultList;
     }
 
-    public <T> T queryForObject(String sql, Map<String, ?> paramMap, RowMapper<T> rowMapper) {
+    public <T> T queryForObject(String sql, Map<String, ?> paramMap, RowMapper<T> rowMapper) throws SQLException {
         ParsedSql parsedSql = new ParsedSql(sql);
         String substituteNamedParametersSql = parsedSql.getSubstituteNamedParameterSql();
         T extractedObject = null;
@@ -58,10 +56,25 @@ public class NamedParameterJdbcTemplate {
                     }
                 }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
         return extractedObject;
+    }
+
+    public int update(String sql, Map<String, ?> paramMap) throws SQLException {
+        int generatedKey;
+        ParsedSql parsedSql = new ParsedSql(sql);
+        String substituteNamedParametersSql = parsedSql.getSubstituteNamedParameterSql();
+
+        try(Connection connection = dataSource.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(substituteNamedParametersSql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            addStatementParameters(preparedStatement, sql, paramMap);
+            preparedStatement.executeUpdate();
+
+            try (ResultSet resultSet = preparedStatement.getGeneratedKeys()){
+                generatedKey = resultSet.next() ? resultSet.getInt(1) : 0;
+            }
+        }
+        return generatedKey;
     }
 
     private void addStatementParameters(PreparedStatement preparedStatement, String sql, Map<String, ?> paramMap) throws SQLException {
