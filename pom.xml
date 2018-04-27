@@ -15,6 +15,10 @@
 
         <!-- Maven plugins properties -->
         <maven-compiler-plugin.version>2.5.1</maven-compiler-plugin.version>
+
+        <!-- Test properties -->
+        <junit.version>4.11</junit.version>
+        <mockito.version>1.9.5</mockito.version>
     </properties>
 
     <build>
@@ -30,4 +34,20 @@
             </plugin>
         </plugins>
     </build>
+
+    <dependencies>
+        <!--Test-->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>
