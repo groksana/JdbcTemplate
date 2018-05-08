@@ -33,18 +33,13 @@ public class NamedParameterJdbcTemplateTest {
     private PreparedStatement preparedStatement;
 
     @Mock
-    private ResultSet resultSet;
-
-    @Mock
-    private RowMapper rowMapper;
-
-    @Mock
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     private Product product;
 
     @Before
     public void setUp() throws Exception {
+        ResultSet resultSet = mock(ResultSet.class);
         assertNotNull(dataSource);
         when(connection.prepareStatement(any(String.class))).thenReturn(preparedStatement);
         when(dataSource.getConnection()).thenReturn(connection);
@@ -53,11 +48,15 @@ public class NamedParameterJdbcTemplateTest {
         product.setId(1);
         product.setName("iPhone");
         product.setPrice(600);
+        product.setPicturePath("https");
+        product.setDescription("iPhone description");
 
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getInt(1)).thenReturn(product.getId());
         when(resultSet.getString(2)).thenReturn(product.getName());
         when(resultSet.getDouble(3)).thenReturn(product.getPrice());
+        when(resultSet.getString(4)).thenReturn(product.getPicturePath());
+        when(resultSet.getString(5)).thenReturn(product.getDescription());
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
     }
 
@@ -66,7 +65,7 @@ public class NamedParameterJdbcTemplateTest {
         ProductRowMapper productRowMapper = new ProductRowMapper();
         Map<String, Object> parameterMap = new HashMap<>();
         parameterMap.put("name", "iPhone");
-        String sql = "select id, name from product where name=:name";
+        String sql = "select id, name, price, picturePath, description from product where name=:name";
         List<Product> products = new ArrayList<>();
         products.add(product);
 
@@ -75,7 +74,9 @@ public class NamedParameterJdbcTemplateTest {
         List<Product> actualProducts = namedParameterJdbcTemplate.query(sql, parameterMap, productRowMapper);
         assertEquals(product.getId(), actualProducts.get(0).getId());
         assertEquals(product.getName(), actualProducts.get(0).getName());
-        assertEquals(product.getPrice(), actualProducts.get(0).getPrice(), 0);
+        assertEquals(product.getPrice(), actualProducts.get(0).getPrice(), 0.001);
+        assertEquals(product.getPicturePath(), actualProducts.get(0).getPicturePath());
+        assertEquals(product.getDescription(), actualProducts.get(0).getDescription());
     }
 
     @Test
@@ -83,21 +84,26 @@ public class NamedParameterJdbcTemplateTest {
         ProductRowMapper productRowMapper = new ProductRowMapper();
         Map<String, Object> parameterMap = new HashMap<>();
         parameterMap.put("name", "iPhone");
-        String sql = "select id, name from product where name=:name";
+        String sql = "select id, name, price, picturePath, description from product where name=:name";
 
         when(namedParameterJdbcTemplate.queryForObject(sql, parameterMap, productRowMapper)).thenReturn(product);
 
         Product actualProduct = namedParameterJdbcTemplate.queryForObject(sql, parameterMap, productRowMapper);
         assertEquals(product.getId(), actualProduct.getId());
         assertEquals(product.getName(), actualProduct.getName());
-        assertEquals(product.getPrice(), actualProduct.getPrice(), 0);
+        assertEquals(product.getPrice(), actualProduct.getPrice(), 0.001);
+        assertEquals(product.getPicturePath(), actualProduct.getPicturePath());
+        assertEquals(product.getDescription(), actualProduct.getDescription());
     }
 
     @Test
     public void updateTest() throws SQLException {
         Map<String, Object> parameterMap = new HashMap<>();
-        parameterMap.put("name", "iPhone");
-        String sql = "INSERT INTO PRODUCT(name) VALUES(:name)";
+        parameterMap.put("name", product.getName());
+        parameterMap.put("price", product.getPrice());
+        parameterMap.put("picturePath", product.getPicturePath());
+        parameterMap.put("description", product.getDescription());
+        String sql = "INSERT INTO PRODUCT(name, price, picturePath, description) VALUES(:name, :price, :picturePath, :description)";
 
         when(namedParameterJdbcTemplate.update(sql, parameterMap)).thenReturn(product.getId());
 
@@ -105,7 +111,7 @@ public class NamedParameterJdbcTemplateTest {
         assertEquals(product.getId(), generatedKey);
     }
 
-    class Product {
+    private static class Product {
         private int id;
         private String name;
         private double price;
@@ -156,7 +162,7 @@ public class NamedParameterJdbcTemplateTest {
         }
     }
 
-    class ProductRowMapper implements RowMapper<Product> {
+    private static class ProductRowMapper implements RowMapper<Product> {
         @Override
         public Product mapRow(ResultSet resultSet) throws SQLException {
             Product product = new Product();
