@@ -1,9 +1,9 @@
-package com.gromoks.jdbctemplate.util;
+package com.gromoks.jdbctemplate.generator.impl;
 
+import com.gromoks.jdbctemplate.util.NamedQueryParser;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
@@ -23,7 +23,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class PreparedStatementGeneratorTest {
+public class NamedPreparedStatementGeneratorTest {
     @Mock
     private DataSource dataSource;
 
@@ -51,33 +51,12 @@ public class PreparedStatementGeneratorTest {
         when(namedQueryParser.getOrderedNamedParameters()).thenReturn(parameterNameList);
         when(namedQueryParser.getSubstituteNamedParameterSql()).thenReturn(SELECT_SQL);
 
-        PreparedStatementGenerator preparedStatementGenerator = mock(PreparedStatementGenerator.class);
-        doNothing().when(preparedStatementGenerator).addStatementParameters(isA(PreparedStatement.class));
-        when(preparedStatementGenerator.generatePreparedStatement(connection)).thenReturn(expectedPreparedStatement);
+        NamedPreparedStatementGenerator namedPreparedStatementGenerator = mock(NamedPreparedStatementGenerator.class);
+        doNothing().when(namedPreparedStatementGenerator).addStatementParameters(isA(PreparedStatement.class));
+        when(namedPreparedStatementGenerator.generatePreparedStatement(connection)).thenReturn(expectedPreparedStatement);
 
-        PreparedStatement actualPreparedStatement = preparedStatementGenerator.generatePreparedStatement(connection);
+        PreparedStatement actualPreparedStatement = namedPreparedStatementGenerator.generatePreparedStatement(connection);
 
         assertEquals(expectedPreparedStatement, actualPreparedStatement);
-    }
-
-    @Test
-    public void addStatementParametersTest() throws SQLException {
-        PreparedStatement preparedStatement = mock(PreparedStatement.class);
-
-        ArgumentCaptor stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
-        doNothing().when(preparedStatement).setString(any(Integer.class), (String) stringArgumentCaptor.capture());
-        preparedStatement.setString(0, "name");
-
-        ArgumentCaptor integerArgumentCaptor = ArgumentCaptor.forClass(Integer.class);
-        doNothing().when(preparedStatement).setInt(any(Integer.class), (Integer) integerArgumentCaptor.capture());
-        preparedStatement.setInt(0, 200);
-
-        ArgumentCaptor doubleArgumentCaptor = ArgumentCaptor.forClass(Double.class);
-        doNothing().when(preparedStatement).setDouble(any(Integer.class), (Double) doubleArgumentCaptor.capture());
-        preparedStatement.setDouble(0, 300.40);
-
-        assertEquals("name", stringArgumentCaptor.getValue());
-        assertEquals(200, integerArgumentCaptor.getValue());
-        assertEquals(300.40, doubleArgumentCaptor.getValue());
     }
 }
