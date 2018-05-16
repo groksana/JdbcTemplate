@@ -1,7 +1,6 @@
-package com.gromoks.jdbctemplate.generator.impl;
+package com.gromoks.jdbctemplate.generator;
 
-import com.gromoks.jdbctemplate.generator.PreparedStatementGenerator;
-import com.gromoks.jdbctemplate.generator.impl.util.ParameterSetter;
+import com.gromoks.jdbctemplate.generator.util.ParameterSetter;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

@@ -1,7 +1,7 @@
 package com.gromoks.jdbctemplate;
 
 import com.gromoks.jdbctemplate.generator.PreparedStatementGenerator;
-import com.gromoks.jdbctemplate.generator.impl.NamedPreparedStatementGenerator;
+import com.gromoks.jdbctemplate.generator.NamedPreparedStatementGenerator;
 import com.gromoks.jdbctemplate.mapper.RowMapper;
 
 import javax.sql.DataSource;

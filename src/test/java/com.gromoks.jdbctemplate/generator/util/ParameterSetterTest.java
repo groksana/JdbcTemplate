@@ -1,4 +1,4 @@
-package com.gromoks.jdbctemplate.generator.impl.util;
+package com.gromoks.jdbctemplate.generator.util;
 
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;

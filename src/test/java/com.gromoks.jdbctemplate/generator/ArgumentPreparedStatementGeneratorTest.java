@@ -1,5 +1,6 @@
-package com.gromoks.jdbctemplate.generator.impl;
+package com.gromoks.jdbctemplate.generator;
 
+import com.gromoks.jdbctemplate.generator.ArgumentPreparedStatementGenerator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,8 +11,6 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.LinkedList;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

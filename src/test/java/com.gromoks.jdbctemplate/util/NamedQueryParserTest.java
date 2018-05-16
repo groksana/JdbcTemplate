@@ -14,36 +14,36 @@ public class NamedQueryParserTest {
 
     @Test
     public void getSubstituteNamedParameterSqlSelectTest() {
-        namedQueryParser = new NamedQueryParser(SELECT_SQL);
+        namedQueryParser = new NamedQueryParser();
         String expectedSelectStatement = "SELECT price FROM product WHERE name=?";
 
-        assertEquals(expectedSelectStatement, namedQueryParser.getSubstituteNamedParameterSql());
+        assertEquals(expectedSelectStatement, namedQueryParser.getSubstituteNamedParameterSql(SELECT_SQL));
     }
 
     @Test
     public void getSubstituteNamedParameterSqlInsertTest() {
-        namedQueryParser = new NamedQueryParser(INSERT_SQL);
+        namedQueryParser = new NamedQueryParser();
         String expectedSelectStatement = "INSERT INTO product(name, price) VALUES(?, ?)";
 
-        assertEquals(expectedSelectStatement, namedQueryParser.getSubstituteNamedParameterSql());
+        assertEquals(expectedSelectStatement, namedQueryParser.getSubstituteNamedParameterSql(INSERT_SQL));
     }
 
     @Test
     public void getOrderedNamedParametersSelectTest() {
-        namedQueryParser = new NamedQueryParser(SELECT_SQL);
+        namedQueryParser = new NamedQueryParser();
         List<String> expectedParameterNameList = new LinkedList<>();
         expectedParameterNameList.add("name");
 
-        assertEquals(expectedParameterNameList, namedQueryParser.getOrderedNamedParameters());
+        assertEquals(expectedParameterNameList, namedQueryParser.getOrderedNamedParameters(SELECT_SQL));
     }
 
     @Test
     public void getOrderedNamedParametersInsertTest() {
-        namedQueryParser = new NamedQueryParser(INSERT_SQL);
+        namedQueryParser = new NamedQueryParser();
         List<String> expectedParameterNameList = new LinkedList<>();
         expectedParameterNameList.add("name");
         expectedParameterNameList.add("price");
 
-        assertEquals(expectedParameterNameList, namedQueryParser.getOrderedNamedParameters());
+        assertEquals(expectedParameterNameList, namedQueryParser.getOrderedNamedParameters(INSERT_SQL));
     }
 }

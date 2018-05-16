@@ -1,5 +1,6 @@
-package com.gromoks.jdbctemplate.generator.impl;
+package com.gromoks.jdbctemplate.generator;
 
+import com.gromoks.jdbctemplate.generator.NamedPreparedStatementGenerator;
 import com.gromoks.jdbctemplate.util.NamedQueryParser;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,6 +34,8 @@ public class NamedPreparedStatementGeneratorTest {
     @Mock
     private NamedQueryParser namedQueryParser;
 
+    private static final String ORIGINAL_SELECT_SQL = "SELECT price FROM product WHERE name=:name";
+
     private static final String SELECT_SQL = "SELECT price FROM product WHERE name=?";
 
     @Before
@@ -48,8 +51,8 @@ public class NamedPreparedStatementGeneratorTest {
 
         PreparedStatement expectedPreparedStatement = connection.prepareStatement(SELECT_SQL);
         when(connection.prepareStatement(any(String.class))).thenReturn(expectedPreparedStatement);
-        when(namedQueryParser.getOrderedNamedParameters()).thenReturn(parameterNameList);
-        when(namedQueryParser.getSubstituteNamedParameterSql()).thenReturn(SELECT_SQL);
+        when(namedQueryParser.getOrderedNamedParameters(ORIGINAL_SELECT_SQL)).thenReturn(parameterNameList);
+        when(namedQueryParser.getSubstituteNamedParameterSql(ORIGINAL_SELECT_SQL)).thenReturn(SELECT_SQL);
 
         NamedPreparedStatementGenerator namedPreparedStatementGenerator = mock(NamedPreparedStatementGenerator.class);
         doNothing().when(namedPreparedStatementGenerator).addStatementParameters(isA(PreparedStatement.class));

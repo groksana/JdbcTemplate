@@ -7,19 +7,10 @@ import java.util.regex.Pattern;
 
 public class NamedQueryParser {
     private static final Pattern PATTERN = Pattern.compile(":(\\w+)");
-    private String originalSql;
 
-    public NamedQueryParser(String originalSql) {
-        this.originalSql = originalSql;
-    }
-
-    public String getOriginalSql() {
-        return originalSql;
-    }
-
-    public String getSubstituteNamedParameterSql() {
+    public String getSubstituteNamedParameterSql(String originalSql) {
         String substitutedSql = originalSql;
-        List<String> parameterNameList = getOrderedNamedParameters();
+        List<String> parameterNameList = getOrderedNamedParameters(originalSql);
         for (String parameterName : parameterNameList) {
             String namedParameter = ":" + parameterName;
             substitutedSql = substitutedSql.replace(namedParameter, "?");
@@ -27,7 +18,7 @@ public class NamedQueryParser {
         return substitutedSql;
     }
 
-    public List<String> getOrderedNamedParameters() {
+    public List<String> getOrderedNamedParameters(String originalSql) {
         Matcher matcher = PATTERN.matcher(originalSql);
         List<String> parameterNameList = new LinkedList<>();
 

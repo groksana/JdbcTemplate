@@ -1,7 +1,7 @@
 package com.gromoks.jdbctemplate;
 
 import com.gromoks.jdbctemplate.generator.PreparedStatementGenerator;
-import com.gromoks.jdbctemplate.generator.impl.ArgumentPreparedStatementGenerator;
+import com.gromoks.jdbctemplate.generator.ArgumentPreparedStatementGenerator;
 import com.gromoks.jdbctemplate.mapper.RowMapper;
 
 import javax.sql.DataSource;
@@ -20,19 +20,17 @@ public class JdbcTemplate {
     }
 
     public <T> List<T> query(String sql, RowMapper<T> rowMapper, Object... args) throws SQLException {
-        List<T> resultList = new ArrayList<>();
         PreparedStatementGenerator argumentPreparedStatementGenerator = new ArgumentPreparedStatementGenerator(sql, args);
 
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = argumentPreparedStatementGenerator.generatePreparedStatement(connection)) {
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+             PreparedStatement preparedStatement = argumentPreparedStatementGenerator.generatePreparedStatement(connection);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+            List<T> resultList = new ArrayList<>();
                 while (resultSet.next()) {
                     T record = rowMapper.mapRow(resultSet);
                     resultList.add(record);
                 }
-            }
+            return resultList;
         }
-        return resultList;
     }
-
 }
