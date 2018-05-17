@@ -16,7 +16,7 @@ import java.util.Map;
 public class NamedParameterJdbcTemplate {
     private DataSource dataSource;
 
-    public NamedParameterJdbcTemplate(DataSource dataSource) {
+    public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 

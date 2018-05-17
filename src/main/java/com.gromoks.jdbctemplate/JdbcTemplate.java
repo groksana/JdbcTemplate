@@ -15,7 +15,7 @@ import java.util.List;
 public class JdbcTemplate {
     private DataSource dataSource;
 
-    public JdbcTemplate(DataSource dataSource) {
+    public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
